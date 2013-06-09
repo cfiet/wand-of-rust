@@ -1697,6 +1697,8 @@ pub type GetWandViewMethod = *u8;
 pub type SetWandViewMethod = *u8;
 pub type TransferWandViewMethod = *u8;
 pub type UpdateWandViewMethod = *u8;
+
+#[link_args = "-lMagickWand-Q16 -lMagickCore-Q16"]
 pub extern "C" {
     fn GetPageGeometry(arg1: *c_schar) -> *mut c_schar;
     fn IsGeometry(arg1: *c_schar) -> MagickBooleanType;
@@ -2462,8 +2464,9 @@ pub extern "C" {
                            arg3: *mut ExceptionInfo) -> *mut c_void;
     fn CombineImages(arg1: *Image, arg2: ChannelType,
                      arg3: *mut ExceptionInfo) -> *mut Image;
-    fn SeparateImage(arg1: *Image, arg2: ChannelType,
-                     arg3: *mut ExceptionInfo) -> *mut Image;
+    // TODO - This function causes a linker error
+    //fn SeparateImage(arg1: *Image, arg2: ChannelType,
+    //                 arg3: *mut ExceptionInfo) -> *mut Image;
     fn SeparateImages(arg1: *Image, arg2: ChannelType,
                       arg3: *mut ExceptionInfo) -> *mut Image;
     fn GetImageAlphaChannel(arg1: *Image) -> MagickBooleanType;
@@ -3552,7 +3555,8 @@ pub extern "C" {
     fn NewXMLTree(arg1: *c_schar, arg2: *mut ExceptionInfo) ->
      *mut XMLTreeInfo;
     fn NewXMLTreeTag(arg1: *c_schar) -> *mut XMLTreeInfo;
-    fn ParseTagFromXMLTree(arg1: *mut XMLTreeInfo) -> *mut XMLTreeInfo;
+    // TODO - This function causes a linker error
+    //fn ParseTagFromXMLTree(arg1: *mut XMLTreeInfo) -> *mut XMLTreeInfo;
     fn PruneTagFromXMLTree(arg1: *mut XMLTreeInfo) -> *mut XMLTreeInfo;
     fn SetXMLTreeAttribute(arg1: *mut XMLTreeInfo, arg2: *c_schar,
                            arg3: *c_schar) -> *mut XMLTreeInfo;
@@ -4118,7 +4122,8 @@ pub extern "C" {
     fn MagickGetResource(arg1: ResourceType) -> MagickSizeType;
     fn MagickGetResourceLimit(arg1: ResourceType) -> MagickSizeType;
     fn MagickGetBackgroundColor(arg1: *mut MagickWand) -> *mut PixelWand;
-    fn MagickGetOrientationType(arg1: *mut MagickWand) -> OrientationType;
+    // TODO - This function causes a linker error
+    //fn MagickGetOrientationType(arg1: *mut MagickWand) -> OrientationType;
     fn MagickGetCompressionQuality(arg1: *mut MagickWand) -> size_t;
     fn MagickGetImageProfile(arg1: *mut MagickWand, arg2: *c_schar,
                              arg3: *mut size_t) -> *mut c_uchar;
@@ -4634,9 +4639,10 @@ pub extern "C" {
     fn MagickStatisticImage(arg1: *mut MagickWand, arg2: ChannelType,
                             arg3: StatisticType, arg4: size_t, arg5: size_t)
      -> MagickBooleanType;
-    fn MagickStatisticImageChannel(arg1: *mut MagickWand, arg2: StatisticType,
-                                   arg3: size_t, arg4: size_t) ->
-     MagickBooleanType;
+    // TODO - This function causes a linker error
+    //fn MagickStatisticImageChannel(arg1: *mut MagickWand, arg2: StatisticType,
+    //                               arg3: size_t, arg4: size_t) ->
+    // MagickBooleanType;
     fn MagickStripImage(arg1: *mut MagickWand) -> MagickBooleanType;
     fn MagickSwirlImage(arg1: *mut MagickWand, arg2: c_double) ->
      MagickBooleanType;
