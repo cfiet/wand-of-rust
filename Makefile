@@ -9,7 +9,7 @@ test:
 	rustc --test rustwand.rc
 
 samples: lib
-	rustc -L . samples/thumbnail.rs -o thumbnail.sample
+	rustc -L . samples/thumbnail.rs -o samples/thumbnail.sample
 
 clean:
 	rm -rf rustwand *.o *.dylib *.dSYM  samples/*.sample samples/*.dSYM
