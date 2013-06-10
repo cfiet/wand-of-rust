@@ -1,7 +1,7 @@
 /*!
  * The first code example from http://www.imagemagick.org/script/magick-wand.php
  * 
- * This program reads a image, creates a thumbnail, and writes out the result.
+ * This program reads an image, creates a thumbnail, and writes out the result.
  * Usage:
  *    ./thumbnail inputfile [-o outputfile]
  */
