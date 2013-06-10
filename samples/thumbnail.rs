@@ -62,25 +62,16 @@ fn thumbnail_it(in: &str, out: Option<~str>) {
    Some(filename) => filename
   };
 
-  println(fmt!("Will be reading from %s", in));
-  println(fmt!("Will be writing to %s", out_file));
+  MagickWandGenesis();
 
-  unsafe { MagickWandGenesis();}
-  let wand = unsafe { NewMagickWand() };
-  in.as_c_str(|buffer| {
-    unsafe { MagickReadImage(wand, buffer); }
-  });
-  unsafe { MagickResetIterator(wand); }
-  unsafe {
-    while (MagickNextImage(wand) != MagickFalse) {
-     MagickResizeImage(wand, 106, 80, LanczosFilter, 1.0); 
-    }
-  }
-  out_file.as_c_str(|buffer| {
-    unsafe { MagickWriteImages(wand, buffer, MagickTrue); }
+  MagickWand::borrow( |wand| {
+    wand.read_image(in);
+    wand.reset_iterator();
+    wand.each_image(|| {
+      wand.resize_image(106, 80, LanczosFilter, 1.0);
+    });
+    wand.write_images(out_file, true);
   });
 
-  unsafe { DestroyMagickWand(wand); }
-
-  unsafe { MagickWandTerminus(); }
+  MagickWandTerminus();
 }
