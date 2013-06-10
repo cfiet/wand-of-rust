@@ -67,7 +67,7 @@ fn thumbnail_it(in: &str, out: Option<~str>) {
   MagickWand::borrow( |wand| {
     wand.read_image(in);
     wand.reset_iterator();
-    wand.each_image(|| {
+    wand.each_image(|| { // <-- this is ugly
       wand.resize_image(106, 80, LanczosFilter, 1.0);
     });
     wand.write_images(out_file, true);
