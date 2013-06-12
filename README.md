@@ -33,3 +33,9 @@ friendly and updating the exposed rustwand API to match.
 
 I'll be blogging about the development of rustwand when
 relevant at the [Scale It!](http://www.dahlgren.so) blog.
+
+### NOTE
+
+The library is currently **very** unstable. Once I figure out
+a good way of handling the versioning of the underlying ImageMagick
+and MagickWand APIs, things will be relatively safe.
