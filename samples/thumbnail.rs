@@ -64,14 +64,14 @@ fn thumbnail_it(in: &str, out: Option<~str>) {
 
   MagickWandGenesis();
 
-  MagickWand::borrow( |wand| {
+  do MagickWand::borrow |wand| {
     wand.read_image(in);
     wand.reset_iterator();
-    wand.each_image(|| {
+    do wand.each_image {
       wand.resize_image(106, 80, LanczosFilter, 1.0);
-    });
+    };
     wand.write_images(out_file, true);
-  });
+  };
 
   MagickWandTerminus();
 }
