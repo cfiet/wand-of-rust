@@ -31,14 +31,20 @@ fn main() {
     print_usage(program_name, opts);
     return;
   }
-  let output = opt_maybe_str(&matches, "o");
   // Ensure that at least the input file is specified
-  let input: &str = if !matches.free.is_empty() { 
-    copy matches.free[0]
-  } else {
-    print_usage(program_name, opts);
-    return;
+  let input: &str = match matches.free {
+    [head, _] => head,
+    _ => {
+      print_usage(program_name, opts);
+      return;
+    }
   };
+  
+  let output = match opt_maybe_str(&matches, "o") {
+    Some(path) => path,
+    None => generate_default_output_filename(input)
+  };
+
   thumbnail_it(input, output);
 }
 
@@ -56,12 +62,7 @@ fn generate_default_output_filename(input: &str) -> ~str {
   ])
 }
 
-fn thumbnail_it(in: &str, out: Option<~str>) {
-  let out_file = match out {
-   None => generate_default_output_filename(in),
-   Some(filename) => filename
-  };
-
+fn thumbnail_it(in: &str, out: &str) {
   MagickWandGenesis();
 
   do MagickWand::borrow |wand| {
@@ -70,7 +71,7 @@ fn thumbnail_it(in: &str, out: Option<~str>) {
     do wand.each_image {
       wand.resize_image(106, 80, LanczosFilter, 1.0);
     };
-    wand.write_images(out_file, true);
+    wand.write_images(out, true);
   };
 
   MagickWandTerminus();
