@@ -2,11 +2,14 @@
 
 #[
   link(
-    name="rustwand", vers = "0.1", uuid = "0440CB5B-5B46-449A-8ECD-7F2DE27C64E2"
+    name="rustwand", vers = "0.2", uuid = "73965B0B-8039-4E4C-A87F-76C6A53FFD1E"
   )
 ];
 
-#[crate_type = "lib"];
+#[crate_type = "dylib"];
+
+#[feature(globs)];
+
 
 extern mod std;
 use std::libc::{c_uint, size_t, c_double};
@@ -54,7 +57,7 @@ pub struct MagickWand {
 }
 
 impl MagickWand {
-  pub fn borrow(block: &fn(wand: &MagickWand)) {
+  pub fn borrow(block: |wand: &MagickWand|) {
     let wand = ~MagickWand { wand: unsafe { bindings::NewMagickWand() } };
     block(wand);
     unsafe { bindings::DestroyMagickWand(wand.wand); }
@@ -72,7 +75,7 @@ impl MagickWand {
     unsafe { bindings::MagickResetIterator(self.wand); }
   }
 
-  pub fn each_image(&self, f: &fn()) {
+  pub fn each_image(&self, f: ||) {
     unsafe {
       while (bindings::MagickNextImage(self.wand) != bindings::MagickFalse) {
         f();
