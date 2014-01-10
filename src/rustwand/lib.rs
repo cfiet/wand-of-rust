@@ -1,14 +1,10 @@
 //! Module: rustwand
 
-#[
-  link(
-    name="rustwand", vers = "0.2", uuid = "73965B0B-8039-4E4C-A87F-76C6A53FFD1E"
-  )
-];
+#[crate_id="rustwand"]
 
-#[crate_type = "dylib"];
+#[crate_type = "dylib"]
 
-#[feature(globs)];
+#[feature(globs)]
 
 
 extern mod std;
@@ -65,7 +61,7 @@ impl MagickWand {
 
   pub fn read_image(&self, path: &str) {
     // TODO: Deal with error conditions somehow - maybe return a Result<Something,Error>?
-    path.as_c_str(|buffer| {
+    path.with_c_str(|buffer| {
       unsafe { bindings::MagickReadImage(self.wand, buffer) }
     });
   }
@@ -98,7 +94,7 @@ impl MagickWand {
       true => bindings::MagickTrue
     };
     unsafe {
-      path.as_c_str(|buffer| {
+      path.with_c_str(|buffer| {
         bindings::MagickWriteImages(self.wand, buffer, magic_version);
       })
     }
