@@ -16,9 +16,9 @@ use wand_of_rust::MagickWandTerminus;
 use std::os;
 
 fn print_usage(name: &str, _opts: &[Opt]) {
-  println(format!("Usage: {:s} input_file [options]", name));
-  println("-o\t\toutput_file");
-  println("-h --help\tUsage");
+  println!("Usage: {:s} input_file [options]", name);
+  println!("-o\t\toutput_file");
+  println!("-h --help\tUsage");
 }
 
 fn main() {
