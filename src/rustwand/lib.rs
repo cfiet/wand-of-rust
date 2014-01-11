@@ -56,7 +56,7 @@ pub struct MagickWand {
 }
 
 impl MagickWand {
-  pub fn borrow(block: |wand: &MagickWand|) {
+  pub fn borrow(block: proc(wand: &MagickWand)) {
     let wand = ~MagickWand { wand: unsafe { bindings::NewMagickWand() } };
     block(wand);
     unsafe { bindings::DestroyMagickWand(wand.wand); }
@@ -74,10 +74,10 @@ impl MagickWand {
     unsafe { bindings::MagickResetIterator(self.wand); }
   }
 
-  pub fn each_image(&self, f: ||) {
+  pub fn each_image(&self, block: proc()) {
     unsafe {
       while (bindings::MagickNextImage(self.wand) != bindings::MagickFalse) {
-        f();
+        block();
       }
     };
   }
