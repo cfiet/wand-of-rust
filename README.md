@@ -15,7 +15,7 @@ Initial generation of bindings was made using the excellent [rust-bindgen](https
 
 To build the library and samples, simply run `make`.
 
-Samples will be built as binaries named \*.sample in the samples directory.
+Samples will be built as binaries and placed in `./bin`.
 
 Samples are based on the code samples for MagickWand, though
 the particular idioms will be adapted to a more Rust friendly
