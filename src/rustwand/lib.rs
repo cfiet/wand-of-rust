@@ -74,9 +74,10 @@ impl MagickWand {
     unsafe { bindings::MagickResetIterator(self.wand); }
   }
 
-  pub fn each_image(&self, block: proc()) {
+  pub fn each_image(&self, block: ||) {
     unsafe {
       while (bindings::MagickNextImage(self.wand) != bindings::MagickFalse) {
+        // TODO: This counts as multiple calls
         block();
       }
     };

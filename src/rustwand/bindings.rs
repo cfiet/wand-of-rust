@@ -2306,6 +2306,7 @@ pub type UpdateWandViewMethod =
     extern "C" fn
         (arg1: *mut WandView, arg2: ssize_t, arg3: c_int, arg4: *mut c_void)
         -> MagickBooleanType;
+
 extern "C" {
     pub static mut _IO_2_1_stdin_: Struct__IO_FILE_plus;
     pub static mut _IO_2_1_stdout_: Struct__IO_FILE_plus;
