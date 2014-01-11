@@ -1,11 +1,14 @@
-//! Module: rustwand
+//! Module: wand-of-rust
 
-#[crate_id="rustwand"]
+#[crate_id = "wand_of_rust"];
+#[crate_type = "dylib"];
 
-#[crate_type = "dylib"]
+#[desc = "ImageMagick's MagickWand bindings"];
+#[license = "MIT"];
 
-#[feature(globs)]
+#[feature(globs)];
 
+#[allow(dead_code)];
 
 extern mod std;
 use std::libc::{c_uint, size_t, c_double};

@@ -6,21 +6,21 @@
  *    ./thumbnail inputfile [-o outputfile]
  */
 extern mod extra;
-extern mod rustwand;
+extern mod wand_of_rust;
 
-use extra::getopts::*;
-use rustwand::*;
+use extra::getopts::{ Opt, optopt, optflag };
+use wand_of_rust::{ MagickWand, LanczosFilter, MagickWandGenesis, MagickWandTerminus };
 use std::os;
 
 fn print_usage(name: &str, _opts: &[Opt]) {
-  println(fmt!("Usage: %s input_file [options]", name));
+  println(format!("Usage: {:s} input_file [options]", name));
   println("-o\t\toutput_file");
   println("-h --help\tUsage");
 }
 
 fn main() {
   let args = os::args();
-  let program_name = copy args[0];
+  let program_name = args[0].clone();
   let opts = ~[ optopt("o"), optflag("h"), optflag("help") ];
   let matches = match getopts(args.tail(), opts) {
     Ok(m) => { m }
@@ -62,16 +62,16 @@ fn generate_default_output_filename(input: &str) -> ~str {
   ])
 }
 
-fn thumbnail_it(in: &str, out: &str) {
+fn thumbnail_it(inbound: &str, outbound: &str) {
   MagickWandGenesis();
 
   do MagickWand::borrow |wand| {
-    wand.read_image(in);
+    wand.read_image(inbound);
     wand.reset_iterator();
     do wand.each_image {
       wand.resize_image(106, 80, LanczosFilter, 1.0);
     };
-    wand.write_images(out, true);
+    wand.write_images(outbound, true);
   };
 
   MagickWandTerminus();

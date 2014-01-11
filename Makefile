@@ -1,15 +1,10 @@
-all: lib samples
+all: librustwand samples
 
-lib: librustwand-c6deddd8be3da891-0.1.dylib
+librustwand:
+	rustc --lib src/rustwand/lib.rs -o lib/
 
-librustwand-c6deddd8be3da891-0.1.dylib:
-	rustc rustwand.rc
+samples:
+	rustc -L ./lib/ src/samples/thumbnail/main.rs -o bin/thumbnail
 
-test:
-	rustc --test rustwand.rc
-
-samples: lib
-	rustc -L . samples/thumbnail.rs -o samples/thumbnail.sample
-
-clean:
-	rm -rf rustwand *.o *.dylib *.dSYM  samples/*.sample samples/*.dSYM
+clean: 
+	rm -Rf ./lib/*.so ./bin/*
