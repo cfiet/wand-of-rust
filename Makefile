@@ -1,14 +1,20 @@
-all: librustwand samples
+all: libwand_of_rust samples
 
-librustwand:
-	rustc --lib src/rustwand/lib.rs -o lib/foo.so
+libwand_of_rust:
+	rustc --lib src/wand_of_rust/lib.rs -o lib/foo.so
 
-samples:
+samples: thumbnail resize
+
+thumbnail:
 	# ImageMagick requires that you use the MagickWand-config utility
 	# to determine the specific libraries to link. We need to pass this
 	# as a single argument to --link-args for rustc, hence the quotes 
 	# surrounding the backticks
 	rustc -L ./lib/ src/samples/thumbnail/main.rs -o bin/thumbnail \
+		--link-args "`MagickWand-config  --libs)`" 
+
+resize:
+	rustc -L ./lib/ src/samples/resize/main.rs -o bin/resize \
 		--link-args "`MagickWand-config  --libs)`" 
 
 clean: 

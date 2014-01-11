@@ -69,6 +69,14 @@ impl MagickWand {
     });
   }
 
+  pub fn get_image_width(&self) -> int {
+    unsafe { bindings::MagickGetImageWidth(self.wand) as int }
+  }
+
+  pub fn get_image_height(&self) -> int {
+    unsafe { bindings::MagickGetImageHeight(self.wand) as int }
+  }
+
   pub fn reset_iterator(&self) {
     // TODO: Again, deal with error conditions
     unsafe { bindings::MagickResetIterator(self.wand); }
@@ -90,6 +98,16 @@ impl MagickWand {
         filter as c_uint, arg as c_double
       );
     }
+  }
+
+  pub fn set_image_compression_quality(&self, quality: u64) {
+    unsafe { bindings::MagickSetImageCompressionQuality(self.wand, quality); }
+  }
+
+  pub fn write_image(&self, path: &str) {
+    path.with_c_str(|buffer| {
+      unsafe { bindings::MagickWriteImage(self.wand, buffer); }
+    })
   }
 
   pub fn write_images(&self, path: &str, adjoin: bool) {
