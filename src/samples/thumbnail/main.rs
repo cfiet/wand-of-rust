@@ -8,7 +8,7 @@
 extern mod extra;
 extern mod wand_of_rust;
 
-use extra::getopts::{ Opt, optopt, optflag };
+use extra::getopts::{ Opt, getopts, optopt, optflag };
 use wand_of_rust::{ MagickWand, LanczosFilter, MagickWandGenesis, MagickWandTerminus };
 use std::os;
 
@@ -24,10 +24,10 @@ fn main() {
   let opts = ~[ optopt("o"), optflag("h"), optflag("help") ];
   let matches = match getopts(args.tail(), opts) {
     Ok(m) => { m }
-    Err(f) => { fail!(fail_str(f)) }
+    Err(f) => { fail!(f.to_err_msg()) }
   };
   // Detect a help request
-  if opt_present(&matches, "h") || opt_present(&matches, "help") {
+  if matches.opt_present("h") || matches.opt_present("help") {
     print_usage(program_name, opts);
     return;
   }
@@ -40,7 +40,7 @@ fn main() {
     }
   };
   
-  let output = match opt_maybe_str(&matches, "o") {
+  let output = match matches.opt_str("o") {
     Some(path) => path,
     None => generate_default_output_filename(input)
   };
@@ -49,17 +49,10 @@ fn main() {
 }
 
 fn generate_default_output_filename(input: &str) -> ~str {
-  // see if the filename has a period in it. If so, I assume that
-  // the last occurance of the period denotes the file extension
-  let append_index = match std::str::rfind_char(input, '.') {
-    Some(index) => index,
-    None => input.len()
-  };
-  // TODO: Figure out wtf with these boxes
-  std::str::concat_slices(&[
-    std::str::slice(input, 0, append_index),
-    &"-thumbnail.png"
-  ])
+  // TODO: Make this replace everything after the last dot occurring in
+  // input rather than just using this hardcoded default
+  // Meaning, I'd rather have turkey-thumbnail.png than thumbnail.png
+  ~"thumbnail.png"
 }
 
 fn thumbnail_it(inbound: &str, outbound: &str) {
