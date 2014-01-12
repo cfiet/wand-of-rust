@@ -3,7 +3,7 @@ all: libwand_of_rust samples
 libwand_of_rust:
 	rustc --lib src/wand_of_rust/lib.rs -o lib/foo.so
 
-samples: thumbnail resize
+samples: thumbnail resize extents
 
 thumbnail:
 	# ImageMagick requires that you use the MagickWand-config utility
@@ -15,6 +15,10 @@ thumbnail:
 
 resize:
 	rustc -L ./lib/ src/samples/resize/main.rs -o bin/resize \
+		--link-args "`MagickWand-config  --libs)`" 
+
+extents:
+	rustc -L ./lib/ src/samples/extents/main.rs -o bin/extents \
 		--link-args "`MagickWand-config  --libs)`" 
 
 clean: 
