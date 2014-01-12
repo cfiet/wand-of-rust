@@ -27,9 +27,13 @@ impl MagickWand {
     unsafe { bindings::DestroyMagickWand(wand.wand); }
   }
 
-  pub fn set_image_background_color(&self, _pixel_wand: &PixelWand) {
-    // How do I get the private pixelwand ref to pass to the unsafe 
-    // function?
+  pub fn set_image_background_color(&self, pixel_wand: &PixelWand) {
+    unsafe {
+      bindings::MagickSetImageBackgroundColor(
+        self.wand, 
+        pixel_wand.wand as *std::libc::types::common::c95::c_void
+      );
+    }
   }
 
   pub fn read_image(&self, path: &str) {
