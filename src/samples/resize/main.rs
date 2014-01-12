@@ -18,7 +18,7 @@ use wand_of_rust::MagickWand;
 fn main() {
   MagickWandGenesis();
 
-  do MagickWand::borrow |wand| {
+  MagickWand::borrow(|wand| {
     // To convert a different file, change 'logo:' to a different file name
     wand.read_image("logo:");
     // Halve the dimensions, ensuring that the values are at least 1
@@ -38,7 +38,7 @@ fn main() {
     wand.set_image_compression_quality(95);
     // Save it
     wand.write_image("logo_resized.jpg");
-  }
+  });
 
   MagickWandTerminus();
 }

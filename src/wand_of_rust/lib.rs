@@ -21,7 +21,7 @@ pub struct MagickWand {
 }
 
 impl MagickWand {
-  pub fn borrow(block: proc(wand: &MagickWand)) {
+  pub fn borrow(block: |&MagickWand|) {
     let wand = ~MagickWand { wand: unsafe { bindings::NewMagickWand() } };
     block(wand);
     unsafe { bindings::DestroyMagickWand(wand.wand); }
@@ -106,7 +106,7 @@ pub struct PixelWand {
 }
 
 impl PixelWand {
-  pub fn borrow(block: proc(wand: &PixelWand)) {
+  pub fn borrow(block: |&PixelWand|) {
     let wand = ~PixelWand { wand: unsafe { bindings::NewPixelWand() } };
     block(wand);
     unsafe { bindings::DestroyPixelWand(wand.wand); }

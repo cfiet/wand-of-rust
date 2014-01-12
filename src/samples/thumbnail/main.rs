@@ -61,14 +61,14 @@ fn generate_default_output_filename(_input: &str) -> ~str {
 fn thumbnail_it(inbound: ~str, outbound: ~str) {
   MagickWandGenesis();
 
-  do MagickWand::borrow |wand| {
+  MagickWand::borrow(|wand| {
     wand.read_image(inbound);
     wand.reset_iterator();
     wand.each_image(|| {
       wand.resize_image(106, 80, LanczosFilter, 1.0);
     });
     wand.write_images(outbound, true);
-  };
+  });
 
   MagickWandTerminus();
 }
