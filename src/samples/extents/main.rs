@@ -29,8 +29,10 @@ fn main() {
     pixel_wand.set_color(Blue);
     wand.set_image_background_color(pixel_wand);
 
+    let new_x = ( -(1024 - width) / 2 ) as int;
+    let new_y = ( -(1024 - height) / 2 ) as int;
     // Center the image on the newly extended canvas
-    wand.extent_image(1024, 768, -(1024 - width) / 2, -(768 - height) / 2);
+    wand.extent_image(1024, 768, new_x, new_y);
     wand.write_image("logo_extent.jpg");
   });
 

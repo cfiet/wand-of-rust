@@ -17,14 +17,19 @@ use filters::FilterType;
 use colors::ColorName;
 use colors::color_to_str;
 
+// This module is just for internal use
 #[path="bindings.rs"]
 mod bindings;
 
+// Expose the other modules that are meant for public consumption
 pub mod channels;
 pub mod colors;
 pub mod filters;
 
 
+/**
+ * The MagickWand struct is used in image manipulation functions.
+ */
 pub struct MagickWand {
   priv wand: *mut bindings::MagickWand
 }
@@ -39,16 +44,30 @@ impl Drop for MagickWand {
 }
 
 impl MagickWand {
+
+  /**
+   * Create a new MagickWand instance. This instance will be properly
+   * cleaned up once it falls out of scope.
+   */
   pub fn new() -> MagickWand {
     MagickWand { wand: unsafe { bindings::NewMagickWand() } }
   }
 
+  /**
+   * Use a temporary MagickWand for a block of code. The MagickWand
+   * will be cleaned up immediately after the provided closure completes.
+   */
   pub fn borrow(block: |&MagickWand|) {
     let wand = ~MagickWand { wand: unsafe { bindings::NewMagickWand() } };
     block(wand);
     // Destructor fires here
   }
 
+  /**
+   * If any part of the image canvas has no color information, it will
+   * be treated as 'background'. This method sets the color to whatever
+   * the provided PixelWand is using.
+   */
   pub fn set_image_background_color(&self, fill: PixelWand) {
     unsafe {
       bindings::MagickSetImageBackgroundColor(
@@ -58,6 +77,16 @@ impl MagickWand {
     }
   }
 
+  /**
+   * This method will analyze the specified channels, matching anything 
+   * within a contiguous region of 'border' color and fill it with 'fill'
+   * color. The border_fuzz param controls how loosely the detection logic
+   * matches border regions. Finally, the x and y coordinates specify where
+   * the fill should begin (think clicking a bucket fill button).
+   *
+   * If reverse is specified, then everything that is *not* the border 
+   * color will be filled instead.
+   */
   pub fn floodfill_paint_image(&self, channels: Channels, fill: PixelWand, 
                                border_fuzz: f64, border: PixelWand, 
                                x: int, y: int, reverse: bool) -> bool {
@@ -70,10 +99,13 @@ impl MagickWand {
         border.wand as *std::libc::types::common::c95::c_void, 
         x as i64, y as i64, 
         reverse as u32
-      ) == 0
+      ) == bindings::MagickTrue
     }
   }
 
+  /**
+   * Read an image in for use with subsequent MagickWand operations.
+   */
   pub fn read_image(&self, path: &str) {
     // TODO: Deal with error conditions somehow - maybe return a Result<Something,Error>?
     path.with_c_str(|buffer| {
@@ -81,24 +113,43 @@ impl MagickWand {
     });
   }
 
-  pub fn get_image_width(&self) -> int {
-    unsafe { bindings::MagickGetImageWidth(self.wand) as int }
+  /**
+   * Retrieve the width of the image
+   */
+  pub fn get_image_width(&self) -> uint {
+    unsafe { bindings::MagickGetImageWidth(self.wand) as uint }
   }
 
-  pub fn get_image_height(&self) -> int {
-    unsafe { bindings::MagickGetImageHeight(self.wand) as int }
+  /**
+   * Retrieve the height of the image
+   */
+  pub fn get_image_height(&self) -> uint {
+    unsafe { bindings::MagickGetImageHeight(self.wand) as uint }
   }
 
-  pub fn resize_image(&self, width: int, height: int, filter: FilterType, arg: f64) {
+  /**
+   * Resize the image to the specified width and height, using
+   * the specified filter type with the specified blur / sharpness
+   * factor.
+   *
+   * blur_factor values greater than 1 create blurriness, while values
+   * less than 1 create sharpness.
+   */
+  pub fn resize_image(&self, width: uint, height: uint, 
+                      filter: FilterType, blur_factor: f64) {
     unsafe {
       bindings::MagickResizeImage(
         self.wand, width as size_t, height as size_t, 
-        filter as c_uint, arg as c_double
+        filter as c_uint, blur_factor as c_double
       );
     }
   }
 
-  pub fn extent_image(&self, width: int, height: int, x: int, y: int) {
+  /**
+   * Change the canvas size of an image to the specified width and 
+   * height, centering the existing image on the specified coordinates.
+   */
+  pub fn extent_image(&self, width: uint, height: uint, x: int, y: int) {
     unsafe { 
       bindings::MagickExtentImage(
         self.wand, width as u64, height as u64, x as i64, y as i64
@@ -111,6 +162,10 @@ impl MagickWand {
     unsafe { bindings::MagickResetIterator(self.wand); }
   }
 
+  /**
+   * When the MagickWand is working on multiple images, this method
+   * will invoke the provided closure once for each image.
+   */
   pub fn each_image(&self, block: ||) {
     unsafe {
       while (bindings::MagickNextImage(self.wand) != bindings::MagickFalse) {
@@ -120,29 +175,44 @@ impl MagickWand {
     };
   }
 
+  /**
+   * Specify the compression quality to use when writing an image.
+   */
   pub fn set_image_compression_quality(&self, quality: u64) {
     unsafe { bindings::MagickSetImageCompressionQuality(self.wand, quality); }
   }
 
-  pub fn write_image(&self, path: &str) {
+  /**
+   * Write the current image to the provided path.
+   */
+  pub fn write_image(&self, path: &str) -> bool {
     path.with_c_str(|buffer| {
-      unsafe { bindings::MagickWriteImage(self.wand, buffer); }
-    })
+      unsafe { bindings::MagickWriteImage(self.wand, buffer) }
+    }) == bindings::MagickTrue
   }
 
-  pub fn write_images(&self, path: &str, adjoin: bool) {
+  /**
+   * Writes an image or image sequence to the specified path.
+   *
+   * If adjoin is true, a single multi-image file will be created.
+   *
+   */
+  pub fn write_images(&self, path: &str, adjoin: bool) -> bool {
     let magic_version = match adjoin {
       false => bindings::MagickFalse,
       true => bindings::MagickTrue
     };
     unsafe {
       path.with_c_str(|buffer| {
-        bindings::MagickWriteImages(self.wand, buffer, magic_version);
-      })
-    }
+        bindings::MagickWriteImages(self.wand, buffer, magic_version)
+      }) == bindings::MagickTrue
+    } 
   }
 }
 
+/**
+ * The PixelWand struct is used for pixel and color based operations.
+ */
 pub struct PixelWand {
   priv wand: *mut bindings::PixelWand
 }
@@ -175,6 +245,9 @@ impl PixelWand {
     // Destructor fired here
   }
 
+  /**
+   * Set the current color of this wand.
+   */
   pub fn set_color(&self, color: ColorName) {
     color_to_str(color).with_c_str(|buffer| {
       unsafe { bindings::PixelSetColor(self.wand, buffer); }
@@ -182,10 +255,17 @@ impl PixelWand {
   }
 }
 
+/**
+ * This function must be called before any other ImageMagick operations
+ * are attempted.
+ */
 pub fn MagickWandGenesis() {
   unsafe { bindings::MagickWandGenesis() }
 }
 
+/**
+ * This function should be called when ImageMagick is no longer needed.
+ */
 pub fn MagickWandTerminus() {
   unsafe { bindings::MagickWandTerminus() }
 }
