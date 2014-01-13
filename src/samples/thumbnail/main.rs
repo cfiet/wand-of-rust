@@ -9,7 +9,7 @@ extern mod extra;
 extern mod wand_of_rust;
 
 use extra::getopts::{ Opt, getopts, optopt, optflag };
-use wand_of_rust::LanczosFilter;
+use wand_of_rust::filters::LanczosFilter;
 use wand_of_rust::MagickWand;
 use wand_of_rust::MagickWandGenesis;
 use wand_of_rust::MagickWandTerminus;

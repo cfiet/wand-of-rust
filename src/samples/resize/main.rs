@@ -12,7 +12,7 @@
 extern mod wand_of_rust;
 
 use wand_of_rust::{ MagickWandGenesis, MagickWandTerminus };
-use wand_of_rust::LanczosFilter;
+use wand_of_rust::filters::LanczosFilter;
 use wand_of_rust::MagickWand;
 
 fn main() {
