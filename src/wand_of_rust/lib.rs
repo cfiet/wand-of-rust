@@ -16,6 +16,7 @@ use channels::Channels;
 use filters::FilterType;
 use colors::ColorName;
 use colors::color_to_str;
+use composite_ops::CompositeOperator;
 
 // This module is just for internal use
 #[path="bindings.rs"]
@@ -25,6 +26,7 @@ mod bindings;
 pub mod channels;
 pub mod colors;
 pub mod filters;
+pub mod composite_ops;
 
 
 /**
@@ -44,7 +46,6 @@ impl Drop for MagickWand {
 }
 
 impl MagickWand {
-
   /**
    * Create a new MagickWand instance. This instance will be properly
    * cleaned up once it falls out of scope.
@@ -73,6 +74,45 @@ impl MagickWand {
       bindings::MagickSetImageBackgroundColor(
         self.wand, 
         fill.wand as *std::libc::types::common::c95::c_void
+      );
+    }
+  }
+
+  /**
+   * Compose overlay_img atop the current image using the specified composite
+   * operator.
+   */
+  pub fn composite_image(&self, overlay_img: MagickWand, composeOp: CompositeOperator, 
+                         x: int, y: int) -> bool {
+    unsafe {
+      bindings::MagickCompositeImage(
+        self.wand, overlay_img.wand as *std::libc::types::common::c95::c_void, 
+        composeOp as u32, x as i64, y as i64
+      ) == bindings::MagickTrue
+    }
+  }
+
+  /**
+   * Negates the colors in the current active image, if only_gray is specified,
+   * then only grayscale values will be negated.
+   */
+  pub fn negate_image(&self, only_gray: bool) -> bool {
+    unsafe {
+      let im_only_gray = match only_gray {
+        true => bindings::MagickTrue,
+        false => bindings::MagickFalse
+      };
+      bindings::MagickNegateImage(self.wand, im_only_gray) == bindings::MagickTrue
+    }
+  }
+
+  /**
+   * Assign / replace the current image clip mask.
+   */
+  pub fn set_image_clip_mask(&self, mask_wand: MagickWand) {
+    unsafe {
+      bindings::MagickSetImageClipMask(
+        self.wand, mask_wand.wand as *std::libc::types::common::c95::c_void
       );
     }
   }
@@ -143,6 +183,17 @@ impl MagickWand {
         filter as c_uint, blur_factor as c_double
       );
     }
+  }
+
+  /**
+   * Sets the size of the MagickWand. To be used prior to reading a raw image.
+   */
+  pub fn set_size(&self, width: uint, height: uint) -> bool {
+    unsafe {
+      bindings::MagickSetSize(
+        self.wand, width as size_t, height as size_t
+      ) == bindings::MagickTrue
+    } 
   }
 
   /**

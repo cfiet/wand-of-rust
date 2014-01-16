@@ -3,7 +3,7 @@ all: libwand_of_rust samples
 libwand_of_rust:
 	rustc --lib src/wand_of_rust/lib.rs -o lib/foo.so
 
-samples: thumbnail resize extents floodfill
+samples: thumbnail resize extents floodfill clipmask
 
 thumbnail: libwand_of_rust
 	# ImageMagick requires that you use the MagickWand-config utility
@@ -23,6 +23,10 @@ extents: libwand_of_rust
 
 floodfill: libwand_of_rust
 	rustc -L ./lib/ src/samples/floodfill/main.rs -o bin/floodfill \
+		--link-args "`MagickWand-config  --libs)`" 
+
+clipmask: libwand_of_rust
+	rustc -L ./lib/ src/samples/clipmask/main.rs -o bin/clipmask \
 		--link-args "`MagickWand-config  --libs)`" 
 
 clean: 
