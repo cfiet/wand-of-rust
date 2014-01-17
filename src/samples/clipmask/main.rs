@@ -14,31 +14,32 @@ fn main() {
   MagickWandGenesis();
 
   // instantiate the various wands we will need
-  let destination = MagickWand::new();
-  let mask = MagickWand::new();
-  let source = MagickWand::new();
+  {
+    let destination = MagickWand::new();
+    let mask = MagickWand::new();
+    let source = MagickWand::new();
 
-  let width = 100;
-  let height = 100;
+    let width = 100;
+    let height = 100;
 
-  destination.set_size(width, height);
-  source.set_size(width, height);
+    destination.set_size(width, height);
+    source.set_size(width, height);
 
-  destination.read_image("tile:tile_water.jpg");
-  mask.read_image("mask_bite.png");
+    destination.read_image("tile:data/tile_water.jpg");
+    mask.read_image("data/mask_bite.png");
 
-  // When creating a mask, white is used for parts that should pass through,
-  // while black is used to block parts. Internally, ImageMagick does the
-  // inverse of this, so the mask must be negated.
-  mask.negate_image(false);
-  // Assign the mask
-  destination.set_image_clip_mask(mask);
+    // When creating a mask, white is used for parts that should pass through,
+    // while black is used to block parts. Internally, ImageMagick does the
+    // inverse of this, so the mask must be negated.
+    mask.negate_image(false);
+    // Assign the mask
+    destination.set_image_clip_mask(mask);
 
-  source.read_image("tile:tile_disks.jpg");
-  // The line below overlays source over the destination (background)
-  destination.composite_image(source, OverCompositeOp, 0, 0);
+    source.read_image("tile:data/tile_disks.jpg");
+    // The line below overlays source over the destination (background)
+    destination.composite_image(source, OverCompositeOp, 0, 0);
 
-  destination.write_image("clip_out.jpg");
-
+    destination.write_image("clip_out.jpg");
+  };
   MagickWandTerminus();
 }

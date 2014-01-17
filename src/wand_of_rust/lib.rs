@@ -41,7 +41,12 @@ pub struct MagickWand {
  */
 impl Drop for MagickWand {
   fn drop(&mut self) {
-    unsafe { bindings::DestroyMagickWand(self.wand); }
+    unsafe { 
+      if (self.wand as uint != 0) {
+        bindings::DestroyMagickWand(self.wand); 
+      }
+    }
+    self.wand = 0 as *mut std::libc::types::common::c95::c_void;
   }
 }
 

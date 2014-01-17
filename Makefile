@@ -1,7 +1,7 @@
 all: libwand_of_rust samples
 
 libwand_of_rust:
-	rustc --lib src/wand_of_rust/lib.rs -o lib/foo.so
+	rustc -Z debug-info --lib src/wand_of_rust/lib.rs -o lib/foo.so
 
 samples: thumbnail resize extents floodfill clipmask
 
@@ -26,8 +26,8 @@ floodfill: libwand_of_rust
 		--link-args "`MagickWand-config  --libs)`" 
 
 clipmask: libwand_of_rust
-	rustc -L ./lib/ src/samples/clipmask/main.rs -o bin/clipmask \
+	rustc -Z debug-info -L ./lib/ src/samples/clipmask/main.rs -o bin/clipmask \
 		--link-args "`MagickWand-config  --libs)`" 
 
 clean: 
-	rm -Rf ./lib/*.so ./bin/*
+	rm -f ./lib/*.so ./bin/*
