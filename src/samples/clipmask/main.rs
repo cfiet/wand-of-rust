@@ -13,8 +13,11 @@ use wand_of_rust::composite_ops::OverCompositeOp;
 fn main() {
   MagickWandGenesis();
 
-  // instantiate the various wands we will need
+  // RED 16Jan2014 16:46:29 - Using RAII for the wands causes problems, as attempting
+  // to free a wand after MagickWandTerminus() has been called causes a segfault in
+  // the ImageMagick library (assertion failure).
   {
+    // instantiate the various wands we will need
     let destination = MagickWand::new();
     let mask = MagickWand::new();
     let source = MagickWand::new();
