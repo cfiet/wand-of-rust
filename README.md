@@ -1,3 +1,8 @@
+# This project is available for adoption
+If you have interest in maintaining this project, please contact me and I will initiate a transfer of ownership.
+
+No further development efforts are expected (it's been three years!)
+
 # MagickWand API bindings for Rust
 
 This project aims to create Rust style safety for using the
